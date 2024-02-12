@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">校园综合服务系统</string>
+    <string name="username_hint">用户名</string>
+    <string name="password_hint">密码</string>
+    <string name="newpassword_hint">新密码</string>
+    <string name="recoverpassword">重置密码</string>
+    <string name="login_button">登录</string>
+    <string name="register_button">注册</string>
+    <string name="recover_password_button">忘记密码</string>
+    <string name="ver">获取验证码</string>
+    <string name="ver2">输入验证码</string>
+</resources>
+
