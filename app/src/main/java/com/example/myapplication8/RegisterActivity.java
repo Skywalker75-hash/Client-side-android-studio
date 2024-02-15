@@ -119,7 +119,7 @@ public class RegisterActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         if (success) {
-                            Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                             // 注册成功，跳转到登录页面
                             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                             startActivity(intent);
@@ -127,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                         } else {
                             // 注册失败的处理
-                            Toast.makeText(RegisterActivity.this, "注册失败" , Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, message , Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (JSONException e) {

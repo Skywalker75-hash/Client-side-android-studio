@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MenuActivity">
+
+    <Button
+        android:id="@+id/buttonCampusCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="一卡通管理"
+       />
+
+    <Button
+        android:id="@+id/buttonAcademicManagement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="教务管理"
+        />
+
+    <Button
+        android:id="@+id/buttonClassSchedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="课程表"
+       />
+
+    <Button
+        android:id="@+id/buttonSecondHandMarket"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="二手商城"
+       />
+
+    <Button
+        android:id="@+id/buttonLostAndFound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="物品挂失"
+        />
+</LinearLayout>

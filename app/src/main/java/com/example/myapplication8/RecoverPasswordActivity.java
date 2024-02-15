@@ -56,8 +56,6 @@ public class RecoverPasswordActivity extends AppCompatActivity {
                 String newPassword = newPasswordEditText.getText().toString();
                 String verificationCode = verificationCodeEditText.getText().toString();
 
-
-
                 // 检查验证码是否正确
                 if (!verificationCode.equals(generatedVerificationCode)) {
                     Toast.makeText(RecoverPasswordActivity.this, "验证码错误", Toast.LENGTH_SHORT).show();
@@ -120,10 +118,11 @@ public class RecoverPasswordActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     boolean success = jsonObject.getBoolean("success");
+                    String message = jsonObject.getString("message");
                     if (success) {
-                        Toast.makeText(RecoverPasswordActivity.this, "密码重置成功", Toast.LENGTH_LONG).show();
+                        Toast.makeText(RecoverPasswordActivity.this, message, Toast.LENGTH_LONG).show();
                     } else {
-                        String message = jsonObject.optString("message", "密码重置失败");
+
                         Toast.makeText(RecoverPasswordActivity.this, message, Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {

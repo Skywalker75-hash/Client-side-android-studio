@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    tools:context=".CardManageActivity">
+
+
+    <Button
+        android:id="@+id/btnQueryAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:onClick="queryAccount"
+        android:text="查询账户" />
+
+    <Button
+        android:id="@+id/btnRecharge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="recharge"
+        android:text="充值账户" />
+
+    <Button
+        android:id="@+id/btnReportLoss"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:onClick="reportLoss"
+        android:text="挂失" />
+
+</LinearLayout>

@@ -7,9 +7,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
                 String username = ((EditText) findViewById(R.id.usernameEditText)).getText().toString();
                 String password = ((EditText) findViewById(R.id.passwordEditText)).getText().toString();
                 new LoginTask().execute(username, password);
+
+
             }
         });
         //注册按钮点击事件：
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
 //登录逻辑代码：
     //AsyncTask是一个异步操作类，execute方法可以使其启动，启动后先在后台执行doInBackground，再在主线程执行onPostExecute
-    private class LoginTask extends AsyncTask<String, Void, String> {
+class LoginTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
             String username = params[0];
@@ -87,28 +92,36 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (result != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(result);
-                    boolean success = jsonObj.getBoolean("success");
-                    String message = jsonObj.getString("message");
-                    runOnUiThread(() -> {
-                        if (success) {
-                            Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "登录失败", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Error parsing JSON response", Toast.LENGTH_SHORT).show());
-                }
-            } else {
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Received empty response", Toast.LENGTH_SHORT).show());
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        if (result != null) {
+            try {
+                JSONObject jsonObj = new JSONObject(result);
+                boolean success = jsonObj.getBoolean("success");
+                String message = jsonObj.getString("message");
+                String username = ((EditText) findViewById(R.id.usernameEditText)).getText().toString();
+                runOnUiThread(() -> {
+                    if (success) {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        // 创建跳转到MenuActivity的Intent
+                        Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+                        // 将用户名作为额外数据传递
+                        intent.putExtra("username", username);
+                        // 启动MenuActivity
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Error parsing JSON response", Toast.LENGTH_SHORT).show());
             }
+        } else {
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Received empty response", Toast.LENGTH_SHORT).show());
         }
     }
+
+  }
 }

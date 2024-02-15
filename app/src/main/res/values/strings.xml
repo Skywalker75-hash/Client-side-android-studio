@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">校园综合服务系统</string>
+    <string name="app_name">服务系统</string>
     <string name="username_hint">用户名</string>
     <string name="password_hint">密码</string>
     <string name="newpassword_hint">新密码</string>
