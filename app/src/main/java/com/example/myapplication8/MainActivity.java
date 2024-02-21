@@ -37,11 +37,10 @@ public class MainActivity extends AppCompatActivity {
                 String password = ((EditText) findViewById(R.id.passwordEditText)).getText().toString();
                 new LoginTask().execute(username, password);
 
-
             }
         });
         //注册按钮点击事件：
-        registerButton.setOnClickListener(new View.OnClickListener() {
+        registerButton.setOnClickListener(new View.OnClickListener() {//new View是匿名类
             @Override
             public void onClick(View v) {
                 // 创建跳转到RegisterActivity的Intent
@@ -63,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 //登录逻辑代码：
-    //AsyncTask是一个异步操作类，execute方法可以使其启动，启动后先在后台执行doInBackground，再在主线程执行onPostExecute
+    //AsyncTask是一个异步操作类，execute方法可以使其启动，启动后先在后台执行doInBackground，再在主线程执行onPostExecute，
+    //doInBackground的返回值将作为onPostExecute的参数
 class LoginTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
@@ -116,10 +116,10 @@ class LoginTask extends AsyncTask<String, Void, String> {
                 });
             } catch (JSONException e) {
                 e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Error parsing JSON response", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "错误，未能成功解析", Toast.LENGTH_SHORT).show());
             }
         } else {
-            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Received empty response", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), "收到空响应", Toast.LENGTH_SHORT).show());
         }
     }
 

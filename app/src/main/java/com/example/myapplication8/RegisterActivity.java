@@ -132,10 +132,10 @@ public class RegisterActivity extends AppCompatActivity {
                     });
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Error parsing JSON response", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "响应解析失败", Toast.LENGTH_SHORT).show());
                 }
             } else {
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Received empty response", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "收到空响应", Toast.LENGTH_SHORT).show());
             }
         }
     }

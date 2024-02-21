@@ -114,7 +114,7 @@ public class RecoverPasswordActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
 
-            if (result != null && !result.isEmpty()) {
+            if (result != null) {
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     boolean success = jsonObject.getBoolean("success");
@@ -126,10 +126,10 @@ public class RecoverPasswordActivity extends AppCompatActivity {
                         Toast.makeText(RecoverPasswordActivity.this, message, Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
-                    Toast.makeText(RecoverPasswordActivity.this, "Failed to parse response", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RecoverPasswordActivity.this, "响应解析失败", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(RecoverPasswordActivity.this, "Received empty response", Toast.LENGTH_LONG).show();
+                Toast.makeText(RecoverPasswordActivity.this, "收到空响应", Toast.LENGTH_LONG).show();
             }
         }
     }
