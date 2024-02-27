@@ -8,6 +8,7 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +35,15 @@ public class CardManageActivity extends AppCompatActivity {
         Button rechargeButton = findViewById(R.id.btnRecharge);//充值按钮
         Button reportLossButton = findViewById(R.id.btnReportLoss);//挂失按钮
         Button cannelButton = findViewById(R.id.btnCancelLoss);//解挂按钮
-
+        ImageButton backButton = findViewById(R.id.backButton);//返回按钮
+        //返回按钮：
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 结束当前Activity，返回上一个Activity
+                finish();
+            }
+        });
         //查询账户按钮点击事件
         accountButton.setOnClickListener(new View.OnClickListener() {
             @Override

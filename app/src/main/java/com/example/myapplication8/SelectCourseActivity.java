@@ -2,10 +2,12 @@ package com.example.myapplication8;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -33,8 +36,11 @@ public class SelectCourseActivity extends AppCompatActivity {
     private CourseAdapter courseAdapter;
     private ProgressBar loadingProgressBar;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_course);
 
@@ -47,19 +53,48 @@ public class SelectCourseActivity extends AppCompatActivity {
 
         new FetchCoursesTask().execute();
 
+        int spanCount = 2; // 列数
+        int spacing = 10; // 间隔大小
+
+        coursesRecyclerView.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, true));
+
+        //获取从MenuActivity传递过来的用户名
+        String username = getIntent().getStringExtra("username");
+
+        Button SelectCourseButton=findViewById(R.id.SelectCourseButton);
+        //选课按钮点击事件：
+        SelectCourseButton.setOnClickListener(new View.OnClickListener() {//new View是匿名类
+            @Override
+            public void onClick(View v) {
+                //从输入框中获取输入的课程号
+                String CourseCode = ((EditText) findViewById(R.id.selectCourseInput)).getText().toString();
+                //启动选课异步任务
+                new SelectCoursesTask().execute(username,CourseCode);
+            }
+        });
+        //返回按钮：
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 结束当前Activity，返回上一个Activity
+                finish();
+            }
+        });
     }
 
+    //展示课程：
     private class FetchCoursesTask extends AsyncTask<Void, Void, List<Course>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             loadingProgressBar.setVisibility(View.VISIBLE);
-            Log.d("FetchCoursesTask", "开始获取课程数据...");
+
         }
 
         @Override
         protected List<Course> doInBackground(Void... voids) {
-            Log.d("FetchCoursesTask", "doInBackground: 开始执行后台任务获取课程数据");
+
             List<Course> courseList = new ArrayList<>();//用一个动态数组courseList来存储Course数据
             try {
                 OkHttpClient client = new OkHttpClient();
@@ -87,9 +122,9 @@ public class SelectCourseActivity extends AppCompatActivity {
                     );
                     courseList.add(course);
                 }
-                Log.d("FetchCoursesTask", "课程数据获取成功");
+
             } catch (Exception e) {
-                Log.e("SelectCourseActivity", "获取课程数据出错", e);
+
             }
             return courseList;          //返回courseList动态数组
         }
@@ -97,11 +132,11 @@ public class SelectCourseActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<Course> courses) {
-            Log.d("FetchCoursesTask", "onPostExecute: 获取到的课程数量: " + (courses != null ? courses.size() : "null"));
+
             super.onPostExecute(courses);
             loadingProgressBar.setVisibility(View.GONE);
             if (courses != null ) {
-                Log.d("FetchCoursesTask", "更新课程数据到UI");
+
                 courseAdapter.updateCourses(courses);
             } else {
                 Toast.makeText(SelectCourseActivity.this, "显示课程失败", Toast.LENGTH_SHORT).show();
@@ -209,5 +244,58 @@ public class SelectCourseActivity extends AppCompatActivity {
             }
         }
     }
+    //选课：
+    private class SelectCoursesTask extends AsyncTask<String, Void, String> {
 
+        @Override
+        protected String doInBackground(String... params) {
+            String username = params[0];
+            String CourseCode = params[1];
+
+            try {
+                OkHttpClient client = new OkHttpClient();
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", username);
+                jsonParam.put("courseCode", CourseCode);
+
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
+                Request request = new Request.Builder()
+                        .url("http://10.0.2.2:3000/selectCourses")
+                        .post(body)
+                        .build();
+
+                try (Response response = client.newCall(request).execute()) {
+                    return response.body().string();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(result);
+                    boolean success = jsonObj.getBoolean("success");
+                    String message = jsonObj.getString("message");
+                    runOnUiThread(() -> {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "错误，未能成功解析", Toast.LENGTH_SHORT).show());
+                }
+            } else {
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "收到空响应", Toast.LENGTH_SHORT).show());
+            }
+        }
+
+    }
 }
+
+
+

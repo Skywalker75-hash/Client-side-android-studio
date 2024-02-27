@@ -18,6 +18,7 @@ public class MenuActivity extends AppCompatActivity {
 
         Button cardButton = findViewById(R.id.buttonCampusCard);//一卡通管理按钮
         Button academicButton = findViewById(R.id.buttonAcademicManagement);//教务管理按钮
+        Button classScheduleButton=findViewById(R.id.buttonClassSchedule);
         //获取从MainActivity传递过来的用户名
         String username = getIntent().getStringExtra("username");
 
@@ -69,8 +70,12 @@ public class MenuActivity extends AppCompatActivity {
                 courseStatusButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // 处理查看选课情况逻辑
-
+                        //创建跳转到ShowSelectedCoursesActivity的Intent
+                        Intent intent = new Intent(v.getContext(), ShowSelectedCoursesActivity.class);
+                        //将用户名作为额外数据传递
+                        intent.putExtra("username", username);
+                        //启动ShowSelectedCoursesActivity
+                        startActivity(intent);
                         dialog.dismiss(); // 关闭对话框
                     }
                 });
@@ -79,7 +84,19 @@ public class MenuActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+        //课程表按钮点击事件
+        classScheduleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 创建跳转到classScheduleActivity的Intent
+                Intent intent = new Intent(v.getContext(), classScheduleActivity.class);
+                // 将用户名作为额外数据传递
+                intent.putExtra("username", username);
+                // 启动classScheduleActivity
+                startActivity(intent);
 
+            }
+        });
 
     }
 }
