@@ -37,7 +37,6 @@ public class SelectCourseActivity extends AppCompatActivity {
     private ProgressBar loadingProgressBar;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -51,12 +50,22 @@ public class SelectCourseActivity extends AppCompatActivity {
         courseAdapter = new CourseAdapter(new ArrayList<>());
         coursesRecyclerView.setAdapter(courseAdapter);//给回收视图设置适配器
 
-        new FetchCoursesTask().execute();
+        new ShowCoursesTask().execute();
 
         int spanCount = 2; // 列数
         int spacing = 10; // 间隔大小
 
         coursesRecyclerView.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, true));
+
+        Button showSchoolCoursesButton=findViewById(R.id.ChooseSchoolButton);//根据学院查询选课的按钮
+        //根据学院信息查询课程信息的按钮点击事件
+        showSchoolCoursesButton.setOnClickListener(new View.OnClickListener() {//new View是匿名类
+            @Override
+            public void onClick(View v) {
+                String department = ((EditText) findViewById(R.id.School)).getText().toString();//输入的学院数据
+                new ShowCoursesByDepartmentTask().execute(department);
+            }
+        });
 
         //获取从MenuActivity传递过来的用户名
         String username = getIntent().getStringExtra("username");
@@ -82,9 +91,72 @@ public class SelectCourseActivity extends AppCompatActivity {
             }
         });
     }
+    //根据学院查询开设课程：
+    private class ShowCoursesByDepartmentTask extends AsyncTask<String, Void, List<Course>> {
+        private Exception taskException = null; // 用于记录doInBackground中发生的异常
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected List<Course> doInBackground(String... departmentNames) {
+            List<Course> courseList = new ArrayList<>(); // 用一个动态数组courseList来存储Course数据
+            try {
+                OkHttpClient client = new OkHttpClient();
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("department", departmentNames[0]); // 假设第一个参数是学院名称
+                RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
+
+                Request request = new Request.Builder()
+                        .url("http://10.0.2.2:3000/showSchoolCourses")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                String responseBody = response.body().string();
+
+                JSONObject responseJson = new JSONObject(responseBody);
+                JSONArray data = responseJson.getJSONArray("data");
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject courseObject = data.getJSONObject(i);
+                    Course course = new Course(
+                            courseObject.getString("CourseName"),
+                            courseObject.getString("CourseCode"),
+                            courseObject.getInt("CreditHours"),
+                            courseObject.getString("Department"),
+                            courseObject.getString("ClassTime")
+                    );
+                    courseList.add(course);
+                }
+
+            } catch (Exception e) {
+                Toast.makeText(SelectCourseActivity.this, "出现异常", Toast.LENGTH_SHORT).show();
+
+            }
+            return courseList; // 返回courseList动态数组
+        }
+
+        @Override
+        protected void onPostExecute(List<Course> courses) {
+            loadingProgressBar.setVisibility(View.GONE);
+           if (courses == null ) {
+                // 处理无数据情况
+                Toast.makeText(SelectCourseActivity.this, "未找到课程信息", Toast.LENGTH_SHORT).show();
+            } else {
+                // 成功加载数据
+                courseAdapter.updateCourses(courses);
+            }
+        }
+    }
+
 
     //展示课程：
-    private class FetchCoursesTask extends AsyncTask<Void, Void, List<Course>> {
+    private class ShowCoursesTask extends AsyncTask<Void, Void, List<Course>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -124,7 +196,7 @@ public class SelectCourseActivity extends AppCompatActivity {
                 }
 
             } catch (Exception e) {
-
+                Toast.makeText(SelectCourseActivity.this, "出现异常", Toast.LENGTH_SHORT).show();
             }
             return courseList;          //返回courseList动态数组
         }
@@ -280,7 +352,7 @@ public class SelectCourseActivity extends AppCompatActivity {
             if (result != null) {
                 try {
                     JSONObject jsonObj = new JSONObject(result);
-                    boolean success = jsonObj.getBoolean("success");
+                    //boolean success = jsonObj.getBoolean("success");
                     String message = jsonObj.getString("message");
                     runOnUiThread(() -> {
                         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
@@ -296,6 +368,3 @@ public class SelectCourseActivity extends AppCompatActivity {
 
     }
 }
-
-
-

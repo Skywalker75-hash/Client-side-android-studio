@@ -41,4 +41,10 @@
         android:layout_height="wrap_content"
         android:text="物品挂失"
         />
+    <Button
+        android:id="@+id/buttonWeather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="天气信息"
+        />
 </LinearLayout>

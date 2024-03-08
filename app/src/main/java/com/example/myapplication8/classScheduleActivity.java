@@ -53,8 +53,6 @@ public class classScheduleActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String username = params[0];
-            Log.d("FetchCoursesTask", "Username: " + username); // 日志输出用户名
-
             try {
                 JSONObject jsonParam = new JSONObject();
                 jsonParam.put("username", username);
@@ -67,20 +65,16 @@ public class classScheduleActivity extends AppCompatActivity {
                         .post(body)
                         .build();
 
-                Log.d("FetchCoursesTask", "Sending request to server"); // 请求发送前的日志
-
                 try (Response response = client.newCall(request).execute()) {
                     if (response.isSuccessful() && response.body() != null) {
                         String responseBody = response.body().string();
-                        Log.d("FetchCoursesTask", "Response: " + responseBody); // 响应成功的日志
+
                         return responseBody;
                     } else {
-                        Log.e("FetchCoursesTask", "Request failed: " + response); // 请求失败的日志
                         return null;
                     }
                 }
             } catch (Exception e) {
-                Log.e("FetchCoursesTask", "Exception: ", e); // 异常的日志
                 return null;
             }
         }
@@ -88,10 +82,7 @@ public class classScheduleActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String jsonData) {
             if (jsonData != null) {
-                Log.d("FetchCoursesTask", "Parsing JSON"); // 开始解析 JSON 的日志
                 parseJSONWithGSON(jsonData);
-            } else {
-                Log.e("FetchCoursesTask", "Failed to get JSON data"); // 获取 JSON 数据失败的日志
             }
         }
     }
@@ -158,8 +149,6 @@ public class classScheduleActivity extends AppCompatActivity {
         Log.d("updateUI", "UI updated successfully");
     }
 
-
-
     public class Course {
         private String CourseName;
         private String ClassTime;
@@ -173,39 +162,7 @@ public class classScheduleActivity extends AppCompatActivity {
         private boolean success;
         private String message;
         private List<Course> data;
-
-//        // Getter for the success field
-//        public boolean isSuccess() {
-//            return success;
-//        }
-//
-//        // Setter for the success field
-//        public void setSuccess(boolean success) {
-//            this.success = success;
-//        }
-//
-//        // Getter for the message field
-//        public String getMessage() {
-//            return message;
-//        }
-//
-//        // Setter for the message field
-//        public void setMessage(String message) {
-//            this.message = message;
-//        }
-//
-//        // Getter for the data field
-//        public List<Course> getData() {
-//            return data;
-//        }
-//
-//        // Setter for the data field
-//        public void setData(List<Course> data) {
-//            this.data = data;
-//        }
     }
-
-
     public class CourseAdapter extends ArrayAdapter<Course> {
         private int resourceLayout;
         private Context mContext;
@@ -229,7 +186,7 @@ public class classScheduleActivity extends AppCompatActivity {
                 courseName.setText(course.getCourseName() != null ? course.getCourseName() : "未知课程");
                 classTime.setText(course.getClassTime() != null ? course.getClassTime() : "未知时间");
             } else {
-                //如果该时段没有课程
+                //如果没有课程
                 courseName.setText("");
                 classTime.setText("");
             }
@@ -241,3 +198,5 @@ public class classScheduleActivity extends AppCompatActivity {
 
 
 }
+
+

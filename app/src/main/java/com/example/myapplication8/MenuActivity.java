@@ -18,7 +18,8 @@ public class MenuActivity extends AppCompatActivity {
 
         Button cardButton = findViewById(R.id.buttonCampusCard);//一卡通管理按钮
         Button academicButton = findViewById(R.id.buttonAcademicManagement);//教务管理按钮
-        Button classScheduleButton=findViewById(R.id.buttonClassSchedule);
+        Button classScheduleButton=findViewById(R.id.buttonClassSchedule);//课程表按钮
+        Button MarketButton = findViewById(R.id.buttonSecondHandMarket);//二手市场按钮
         //获取从MainActivity传递过来的用户名
         String username = getIntent().getStringExtra("username");
 
@@ -95,6 +96,55 @@ public class MenuActivity extends AppCompatActivity {
                 // 启动classScheduleActivity
                 startActivity(intent);
 
+            }
+        });
+        //商城按钮点击事件
+        MarketButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //加载自定义对话框布局
+                LayoutInflater inflater = LayoutInflater.from(MenuActivity.this);
+                View dialog1 = inflater.inflate(R.layout.dialog_choose_market, null);
+
+                //创建对话框构造器
+                AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+                //设置对话框自定义布局
+                builder.setView(dialog1);
+
+                //创建对话框
+                AlertDialog dialog = builder.create();
+
+                //发布商品按钮点击事件：
+                Button releaseButton = dialog1.findViewById(R.id.releaseButton);
+                releaseButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //创建跳转到ReleaseThingsActivity的Intent
+                        Intent intent = new Intent(v.getContext(), ReleaseThingsActivity.class);
+                        //将用户名作为额外数据传递
+                        intent.putExtra("username", username);
+                        //启动ReleaseThingsActivity
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                });
+                //购买商品按钮点击事件
+                Button buyButton = dialog1.findViewById(R.id.buyButton);
+                buyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //创建跳转到ShowThingsActivity的Intent
+                        Intent intent = new Intent(v.getContext(), ShowThingsActivity.class);
+                        //将用户名作为额外数据传递
+                        intent.putExtra("username", username);
+                        //启动ReleaseThingsActivity
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                });
+
+                // 显示对话框
+                dialog.show();
             }
         });
 

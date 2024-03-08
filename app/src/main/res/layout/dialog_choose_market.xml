@@ -1,0 +1,23 @@
+<!-- dialog_academic_management.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/releaseButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发布商品"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/buyButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选购商品"
+        android:textSize="18sp"/>
+
+</LinearLayout>

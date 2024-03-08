@@ -32,6 +32,9 @@ android {
 }
 
 dependencies {
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor( "com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("com.google.code.gson:gson:2.8.6")
     implementation ("com.squareup.okhttp3:okhttp:4.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
