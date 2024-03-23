@@ -12,6 +12,13 @@
         android:text="发布商品"
         android:textSize="18sp"
         android:layout_marginBottom="16dp"/>
+    <Button
+        android:id="@+id/manageThingsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="管理我的发布"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/buyButton"

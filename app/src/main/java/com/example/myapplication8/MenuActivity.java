@@ -2,6 +2,7 @@ package com.example.myapplication8;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -113,6 +114,9 @@ public class MenuActivity extends AppCompatActivity {
 
                 //创建对话框
                 AlertDialog dialog = builder.create();
+                Log.d("MenuActivity", "Showing market dialog");
+                // 显示对话框
+                dialog.show();
 
                 //发布商品按钮点击事件：
                 Button releaseButton = dialog1.findViewById(R.id.releaseButton);
@@ -128,6 +132,21 @@ public class MenuActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
+                //管理我的发布按钮
+                Button manageThingsButton=dialog1.findViewById(R.id.manageThingsButton);
+                manageThingsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //创建跳转到ManageThingsActivity的Intent
+                        Intent intent = new Intent(v.getContext(), ManageThingsActivity.class);
+                        //将用户名作为额外数据传递
+                        intent.putExtra("username", username);
+                        //启动ManageThingsActivity
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                });
+
                 //购买商品按钮点击事件
                 Button buyButton = dialog1.findViewById(R.id.buyButton);
                 buyButton.setOnClickListener(new View.OnClickListener() {
