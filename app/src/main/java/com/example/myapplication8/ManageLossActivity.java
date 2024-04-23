@@ -34,11 +34,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ManageThingsActivity extends AppCompatActivity {
+public class ManageLossActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private ArrayList<Item> dataList = new ArrayList<>();
-    private MyAdapter adapter;
+    private ArrayList<ManageLossActivity.Item> dataList = new ArrayList<>();
+    private ManageLossActivity.MyAdapter adapter;
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private int currentPage = 1;
@@ -51,7 +51,7 @@ public class ManageThingsActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView2);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MyAdapter(dataList);
+        adapter = new ManageLossActivity.MyAdapter(dataList);
         recyclerView.setAdapter(adapter);
         username = getIntent().getStringExtra("username");//获取传过来的用户id
         Button manageButton=findViewById(R.id.buttonSubmit);//商品删除按钮
@@ -68,8 +68,8 @@ public class ManageThingsActivity extends AppCompatActivity {
         manageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String itemID = ((EditText) findViewById(R.id.editTextInput)).getText().toString();
-                new DeleteItemTask().execute(itemID);
+                String LossItemID = ((EditText) findViewById(R.id.editTextInput)).getText().toString();
+                new ManageLossActivity.DeleteItemTask().execute(LossItemID);
 
             }
         });
@@ -99,7 +99,7 @@ public class ManageThingsActivity extends AppCompatActivity {
     }
 
     private void loadMoreItems() {
-        new FetchItemsTask().execute();
+        new ManageLossActivity.FetchItemsTask().execute();
     }
     //刷新页面方法：
     private void refreshItemsList() {
@@ -114,19 +114,15 @@ public class ManageThingsActivity extends AppCompatActivity {
     public class Item {
         private String name;//商品名称
         private String imageData; //存储Base64编码的图片数据
-        private double price; //价格
-        private String userName;
-        private String Category;
+
 
         private int ItemID;
 
         //构造器
-        public Item(String name, String imageData, double price, String userName, String Category, int ItemID) {
+        public Item(String name, String imageData,int ItemID) {
             this.name = name;
             this.imageData = imageData;
-            this.price = price;
-            this.userName = userName;
-            this.Category = Category;
+
             this.ItemID = ItemID;
         }
 
@@ -136,18 +132,6 @@ public class ManageThingsActivity extends AppCompatActivity {
 
         public String getImageData() {
             return imageData;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public String getuserName() {
-            return userName;
-        }
-
-        public String getCategory() {
-            return Category;
         }
 
         public int getItemID() {
@@ -160,15 +144,15 @@ public class ManageThingsActivity extends AppCompatActivity {
         private String TAG;
         @Override
         protected String doInBackground(String... params) {
-            String itemID=params[0];
+            String LossItemID=params[0];
             OkHttpClient client = new OkHttpClient();
             RequestBody formBody = new FormBody.Builder()
                     .add("username", username)
-                    .add("itemID", itemID)
+                    .add("LossItemID", LossItemID)
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://10.0.2.2:3000/removeThings")
+                    .url("http://10.0.2.2:3000/removeLoss")
                     .post(formBody)
                     .build();
             try {
@@ -193,20 +177,23 @@ public class ManageThingsActivity extends AppCompatActivity {
                     JSONObject jsonResponse = new JSONObject(result);
                     boolean success = jsonResponse.optBoolean("success", false);
                     String message = jsonResponse.optString("message", "No message returned from server.");
-                    Toast.makeText(ManageThingsActivity.this, message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ManageLossActivity.this, message, Toast.LENGTH_LONG).show();
                     if (success) {
-                        refreshItemsList();//刷新循环视图
-
+                        Log.d(TAG, "Delete successful, refreshing list.");
+                        refreshItemsList(); // 刷新循环视图
+                    } else {
+                        Log.d(TAG, "Delete failed, not refreshing list.");
                     }
-                } catch (Exception e) {
+                } catch (JSONException e) {
                     Log.e(TAG, "Error parsing JSON response", e);
-                    Toast.makeText(ManageThingsActivity.this, "Error parsing server response", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ManageLossActivity.this, "Error parsing server response", Toast.LENGTH_LONG).show();
                 }
             } else {
                 Log.e(TAG, "Error: No response from server");
-                Toast.makeText(ManageThingsActivity.this, "No response from server", Toast.LENGTH_LONG).show();
+                Toast.makeText(ManageLossActivity.this, "No response from server", Toast.LENGTH_LONG).show();
             }
         }
+
 
     }
 
@@ -221,7 +208,7 @@ public class ManageThingsActivity extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url("http://10.0.2.2:3000/showuserThings")
+                    .url("http://10.0.2.2:3000/showuserLoss")
                     .post(formBody)
                     .build();
 
@@ -249,20 +236,18 @@ public class ManageThingsActivity extends AppCompatActivity {
 
                     if (data.length() == 0) {
                         isLastPage = true;
-                        Toast.makeText(ManageThingsActivity.this, "所有数据已加载完成", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ManageLossActivity.this, "所有数据已加载完成", Toast.LENGTH_SHORT).show();
                     } else {
                         // 循环遍历解析到的JSON数组，并将其添加到dataList中
                         for (int i = 0; i < data.length(); i++) {
                             JSONObject itemObj = data.getJSONObject(i);
-                            String itemName = itemObj.getString("ItemName"); // 请确保这里的键名与JSON响应中的一致
+                            String LossItemName = itemObj.getString("LossItemName"); // 请确保这里的键名与JSON响应中的一致
                             String imageData = itemObj.getString("Image"); // 获取图片数据（Base64编码）
-                            double price = itemObj.getDouble("Price"); // 获取价格
-                            String userName = itemObj.getString("userName");//获取发布者名字
-                            String Category = itemObj.getString("Category");//获取商品类别
-                            int ItemID = itemObj.getInt("ItemID"); // 获取商品ID
+
+                            int LossItemID = itemObj.getInt("LossItemID"); // 获取商品ID
 
                             // 将解析的数据添加到ArrayList中
-                            Item it = new Item(itemName, imageData, price, userName, Category, ItemID);
+                            ManageLossActivity.Item it = new Item(LossItemName, imageData, LossItemID);
                             dataList.add(it);
                         }
                         // 通知适配器数据集已改变，以便更新UI
@@ -272,35 +257,34 @@ public class ManageThingsActivity extends AppCompatActivity {
                     }
                 } catch (JSONException e) {
                     Log.e("ShowThingsActivity", "JSON parsing error", e);
-                    Toast.makeText(ManageThingsActivity.this, "数据解析错误", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ManageLossActivity.this, "数据解析错误", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(ManageThingsActivity.this, "加载数据失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ManageLossActivity.this, "加载数据失败", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     //RecyclerView适配器
-    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-        private final ArrayList<Item> dataList;
+    public class MyAdapter extends RecyclerView.Adapter<ManageLossActivity.MyAdapter.ViewHolder> {
+        private final ArrayList<ManageLossActivity.Item> dataList;
 
-        public MyAdapter(ArrayList<Item> dataList) {
+        public MyAdapter(ArrayList<ManageLossActivity.Item> dataList) {
             this.dataList = dataList;
         }
 
         @NonNull
         @Override
         //为每个列表项创建一个新的视图（创建子视图）
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ManageLossActivity.MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
-            return new ViewHolder(view);
+            return new ManageLossActivity.MyAdapter.ViewHolder(view);
         }
 
         @Override
         //将数据绑定到列表项的视图上（将数据绑定到子视图上）
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            Item item = dataList.get(position);
-            Log.d("ShowThingsActivity", "Item Name: " + item.getName() + ", Price: $" + item.getPrice());
+        public void onBindViewHolder(@NonNull ManageLossActivity.MyAdapter.ViewHolder holder, int position) {
+            ManageLossActivity.Item item = dataList.get(position);
             Log.d("ShowThingsActivity", "Binding view for item: " + item.getName());
             holder.textView.setText(item.getName());
             holder.idTextView.setText("商品id：" + item.getItemID());
