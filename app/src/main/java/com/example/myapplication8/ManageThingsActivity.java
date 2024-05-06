@@ -195,7 +195,7 @@ public class ManageThingsActivity extends AppCompatActivity {
                     String message = jsonResponse.optString("message", "No message returned from server.");
                     Toast.makeText(ManageThingsActivity.this, message, Toast.LENGTH_LONG).show();
                     if (success) {
-                        refreshItemsList();//刷新循环视图
+                        refreshItemsList();
 
                     }
                 } catch (Exception e) {

@@ -31,11 +31,13 @@ public class CardManageActivity extends AppCompatActivity {
 
         //获取从MenuActivity传过来的username
         String username = getIntent().getStringExtra("username");
+        Button registerButton=findViewById(R.id.registerButton); //注册账户按钮
         Button accountButton = findViewById(R.id.btnQueryAccount); //查询账户按钮
         Button rechargeButton = findViewById(R.id.btnRecharge);//充值按钮
         Button reportLossButton = findViewById(R.id.btnReportLoss);//挂失按钮
         Button cannelButton = findViewById(R.id.btnCancelLoss);//解挂按钮
         ImageButton backButton = findViewById(R.id.backButton);//返回按钮
+
         //返回按钮：
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +46,27 @@ public class CardManageActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText cardInput = new EditText(CardManageActivity.this);
+                cardInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+                new AlertDialog.Builder(CardManageActivity.this)
+                        .setTitle("注册校园卡")
+                        .setMessage("请输入校园卡号:")
+                        .setView(cardInput)
+                        .setPositiveButton("注册", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                String cardNumber = cardInput.getText().toString();
+                                new RegisterCardTask().execute(username, cardNumber); // 执行异步任务进行注册
+                            }
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
+            }
+        });
+
         //查询账户按钮点击事件
         accountButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +110,51 @@ public class CardManageActivity extends AppCompatActivity {
         });
 
     }
+    private class RegisterCardTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String username = params[0];
+            String cardNumber = params[1];
+
+            try {
+                OkHttpClient client = new OkHttpClient();
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("userName", username);
+                jsonParam.put("cardNumber", cardNumber);
+
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
+                Request request = new Request.Builder()
+                        .url("http://10.0.2.2:3000/registercard")
+                        .post(body)
+                        .build();
+
+                try (Response response = client.newCall(request).execute()) {
+                    return response.body().string();
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result == null) {
+                Toast.makeText(getApplicationContext(), "网络请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                JSONObject jsonObj = new JSONObject(result);
+                boolean success = jsonObj.getBoolean("success");
+                String message = jsonObj.getString("message");
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "响应解析失败", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     //查询账户：
     private class QueryAccountTask extends AsyncTask<String, Void, String> {
@@ -101,8 +169,6 @@ public class CardManageActivity extends AppCompatActivity {
                 OkHttpClient client = new OkHttpClient();
                 JSONObject jsonParam = new JSONObject();
                 jsonParam.put("userName", username);
-
-
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                 RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
                 Request request = new Request.Builder()
@@ -225,18 +291,7 @@ public class CardManageActivity extends AppCompatActivity {
             }
         }
 
-//        private void showDialog(String title, String message) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(CardManageActivity.this);
-//            builder.setTitle(title);
-//            builder.setMessage(message);
-//            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    dialog.dismiss();
-//                }
-//            });
-//            builder.show();
-//        }
+
     }
 
 
@@ -293,18 +348,7 @@ public class CardManageActivity extends AppCompatActivity {
             }
         }
 
-//        private void showDialog(String title, String message) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(CardManageActivity.this);
-//            builder.setTitle(title);
-//            builder.setMessage(message);
-//            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    dialog.dismiss();
-//                }
-//            });
-//            builder.show();
-//        }
+
     }
 
 

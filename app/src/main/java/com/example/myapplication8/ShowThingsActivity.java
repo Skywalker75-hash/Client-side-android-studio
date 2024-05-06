@@ -216,7 +216,7 @@ public class ShowThingsActivity extends AppCompatActivity {
             Log.d("ShowThingsActivity", "Item Name: " + item.getName() + ", Price: $" + item.getPrice());
             Log.d("ShowThingsActivity", "Binding view for item: " + item.getName());
             holder.textView.setText(item.getName());
-            holder.priceTextView.setText("价格: $" + item.getPrice());
+            holder.priceTextView.setText("价格: ￥" + item.getPrice());
 
             // 解码Base64图片字符串
             if (item.getImageData() != null && !item.getImageData().isEmpty()) {

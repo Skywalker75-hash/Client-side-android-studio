@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -74,10 +74,10 @@ public class ItemDetailActivity extends AppCompatActivity {
                 new buyItemTask(username,itemID).execute();
             }
         });
-    }private class buyItemTask extends AsyncTask<Void, Void, String> {
+    }
+    private class buyItemTask extends AsyncTask<Void, Void, String> {
         private String username;
-        private int itemID; // 保留itemID为int类型
-        private boolean x = false;
+        private int itemID;
 
         public buyItemTask(String username, int itemID) {
             this.username = username;
@@ -87,47 +87,53 @@ public class ItemDetailActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             OkHttpClient client = new OkHttpClient();
-            RequestBody formBody = new FormBody.Builder()
-                    .add("username", username)
-                    .add("itemID", String.valueOf(itemID)) // 将itemID转换为String
-                    .build();
+            JSONObject jsonParam = new JSONObject();
+            try {
+                jsonParam.put("username", username);
+                jsonParam.put("itemID", itemID);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null; // 返回null表示JSON构造失败
+            }
+
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
 
             Request request = new Request.Builder()
-                    .url("http://10.0.2.2:3000/buyThings") // 替换为实际的服务器地址
-                    .post(formBody)
+                    .url("http://10.0.2.2:3000/buyThings") // 确保URL是正确的
+                    .post(body)
                     .build();
 
             try {
-                Log.d("buyItemTask", "Sending buy request for user: " + username + ", itemID: " + itemID);
                 Response response = client.newCall(request).execute();
-                x = true;
                 if (response.isSuccessful() && response.body() != null) {
-                    String responseBody = response.body().string();
-                    return responseBody;
+                    return response.body().string(); // 直接返回服务器响应的内容
+                } else {
+                    return null; // 直接返回null，不构造错误消息
                 }
             } catch (IOException e) {
                 Log.e("buyItemTask", "Request failed", e);
+                return null; // 返回null表示请求失败
             }
-            return null;
         }
 
         @Override
         protected void onPostExecute(String result) {
-            if (result != null && !result.isEmpty()) {
+            super.onPostExecute(result);
+            if (result != null) {
                 try {
                     JSONObject jsonResponse = new JSONObject(result);
-                    String message = jsonResponse.optString("message");
-                    Toast.makeText(ItemDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                    boolean success = jsonResponse.getBoolean("success");
+                    String message = jsonResponse.getString("message");
+                    Toast.makeText(ItemDetailActivity.this, message, Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
-                    Toast.makeText(ItemDetailActivity.this, "解析响应失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ItemDetailActivity.this, "解析响应失败: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             } else {
-                if (x) {
-                    Toast.makeText(ItemDetailActivity.this, "服务器未响应，请稍后再试", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ItemDetailActivity.this, "请求未发送成功", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(ItemDetailActivity.this, "没有从服务器收到响应", Toast.LENGTH_LONG).show();
             }
         }
     }
+
+
 }

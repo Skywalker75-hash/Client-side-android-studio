@@ -2,9 +2,12 @@ package com.example.myapplication8;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,20 +36,30 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
     private RecyclerView coursesRecyclerView;
     private CourseAdapter courseAdapter;
     private ProgressBar loadingProgressBar;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_selected_courses);
         //获取从MenuActivity传递过来的用户名
+         username = getIntent().getStringExtra("username");
+        //获取页面资源
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
         coursesRecyclerView = findViewById(R.id.coursesRecyclerView);
         coursesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         courseAdapter = new CourseAdapter(new ArrayList<>());
         coursesRecyclerView.setAdapter(courseAdapter);
+        Button deletebutton=findViewById(R.id.deletebutton);//删除选课按钮
+        deletebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String courseCode = ((EditText) findViewById(R.id.editTextInput)).getText().toString();//获取输入的课程号
+                new deleteCourseTask().execute(username, courseCode);
+            }
+        });
 
-        // 获取用户名
-        String username = getIntent().getStringExtra("username");
+
         new FetchCoursesTask(username).execute();
         //返回按钮：
         ImageButton backButton = findViewById(R.id.backButton);
@@ -59,6 +72,64 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         });
 
     }
+    private class deleteCourseTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String username = params[0];
+            String courseCode = params[1];
+
+            Log.d("DeleteCourseTask", "Starting task with username: " + username + " and courseCode: " + courseCode);
+
+            try {
+                OkHttpClient client = new OkHttpClient();
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", username);
+                jsonParam.put("courseCode", courseCode);
+
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
+                Request request = new Request.Builder()
+                        .url("http://10.0.2.2:3000/deleteCourse")
+                        .post(body)
+                        .build();
+
+                Log.d("DeleteCourseTask", "Sending request to server");
+
+                try (Response response = client.newCall(request).execute()) {
+                    String responseBody = response.body().string();
+                    Log.d("DeleteCourseTask", "Received response: " + responseBody);
+                    return responseBody;
+                }
+            } catch (Exception e) {
+                Log.e("DeleteCourseTask", "Error in network operation", e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result == null) {
+                Toast.makeText(getApplicationContext(), "网络请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                JSONObject jsonObj = new JSONObject(result);
+                boolean success = jsonObj.getBoolean("success");
+                String message = jsonObj.getString("message");
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                if (success) {
+                    // 删除成功后重新加载课程列表
+                    new FetchCoursesTask(username).execute();
+                }
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "响应解析失败", Toast.LENGTH_SHORT).show();
+                Log.e("DeleteCourseTask", "Failed to parse the response", e);
+            }
+        }
+
+    }
+
 
     public class FetchCoursesTask extends AsyncTask<Void, Void, String> {
         private String username;

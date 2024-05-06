@@ -115,15 +115,16 @@ public class ManageLossActivity extends AppCompatActivity {
         private String name;//商品名称
         private String imageData; //存储Base64编码的图片数据
 
-
+        private String phone;
         private int ItemID;
 
         //构造器
-        public Item(String name, String imageData,int ItemID) {
+        public Item(String name, String imageData,int ItemID,String phone) {
             this.name = name;
             this.imageData = imageData;
 
             this.ItemID = ItemID;
+            this.phone=phone;
         }
 
         public String getName() {
@@ -137,6 +138,10 @@ public class ManageLossActivity extends AppCompatActivity {
         public int getItemID() {
             return ItemID;
         }
+        public String getPhone() {
+            return phone;
+        }
+
 
     }
 
@@ -243,11 +248,11 @@ public class ManageLossActivity extends AppCompatActivity {
                             JSONObject itemObj = data.getJSONObject(i);
                             String LossItemName = itemObj.getString("LossItemName"); // 请确保这里的键名与JSON响应中的一致
                             String imageData = itemObj.getString("Image"); // 获取图片数据（Base64编码）
-
+                            String Phone =  itemObj.getString("Phone");
                             int LossItemID = itemObj.getInt("LossItemID"); // 获取商品ID
 
                             // 将解析的数据添加到ArrayList中
-                            ManageLossActivity.Item it = new Item(LossItemName, imageData, LossItemID);
+                            ManageLossActivity.Item it = new Item(LossItemName, imageData, LossItemID,Phone);
                             dataList.add(it);
                         }
                         // 通知适配器数据集已改变，以便更新UI
@@ -277,7 +282,7 @@ public class ManageLossActivity extends AppCompatActivity {
         @Override
         //为每个列表项创建一个新的视图（创建子视图）
         public ManageLossActivity.MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.mlossitem_layout, parent, false);
             return new ManageLossActivity.MyAdapter.ViewHolder(view);
         }
 
@@ -286,8 +291,9 @@ public class ManageLossActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ManageLossActivity.MyAdapter.ViewHolder holder, int position) {
             ManageLossActivity.Item item = dataList.get(position);
             Log.d("ShowThingsActivity", "Binding view for item: " + item.getName());
-            holder.textView.setText(item.getName());
-            holder.idTextView.setText("商品id：" + item.getItemID());
+            holder.textView1.setText(item.getName());
+            holder.textviewid.setText("商品id：" + item.getItemID());
+            holder.textview2.setText("找到者电话：" + item.getPhone());
 
             // 解码Base64图片字符串
             if (item.getImageData() != null && !item.getImageData().isEmpty()) {
@@ -316,15 +322,18 @@ public class ManageLossActivity extends AppCompatActivity {
 
         // 缓存列表项视图中的控件引用
         public class ViewHolder extends RecyclerView.ViewHolder {
-            TextView textView;
+            TextView textView1;
             ImageView imageView;
-            TextView idTextView; // 新增价格TextView
+            TextView textview2;
+            TextView textviewid;
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                textView = itemView.findViewById(R.id.name_text_view);
+                textView1 = itemView.findViewById(R.id.name_text_view);
+                textview2 =  itemView.findViewById(R.id.phone_text_view);
                 imageView = itemView.findViewById(R.id.image_view);
-                idTextView = itemView.findViewById(R.id.price_text_view); // 绑定价格TextView
+                textviewid= itemView.findViewById(R.id.id_text_view);
+
             }
         }
     }

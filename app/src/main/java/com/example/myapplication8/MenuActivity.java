@@ -22,6 +22,7 @@ public class MenuActivity extends AppCompatActivity {
         Button classScheduleButton=findViewById(R.id.buttonClassSchedule);//课程表按钮
         Button MarketButton = findViewById(R.id.buttonSecondHandMarket);//二手市场按钮
         Button LossButton = findViewById(R.id.buttonLostAndFound);//挂失按钮
+        Button WeatherButton = findViewById(R.id.buttonWeather);//天气查询按钮
         //获取从MainActivity传递过来的用户名
         String username = getIntent().getStringExtra("username");
 
@@ -183,7 +184,7 @@ public class MenuActivity extends AppCompatActivity {
                 //创建对话框
                 AlertDialog dialog = builder.create();
                 Log.d("MenuActivity", "Showing market dialog");
-                // 显示对话框
+                //显示对话框
                 dialog.show();
 
                 //发布商品按钮点击事件：
@@ -234,7 +235,16 @@ public class MenuActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+        WeatherButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //创建跳转到WeatherActivity的Intent
+                Intent intent = new Intent(v.getContext(), WeatherActivity.class);
+                //启动WeatherActivity
+                startActivity(intent);
 
+            }
+        });
 
     }
 }

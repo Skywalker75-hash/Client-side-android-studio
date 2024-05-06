@@ -34,6 +34,8 @@
         android:inputType="textPassword"
         android:layout_marginBottom="8dp"/>
 
+
+
     <!-- 验证码输入框和获取验证码按钮的水平布局 -->
     <LinearLayout
         android:layout_width="match_parent"

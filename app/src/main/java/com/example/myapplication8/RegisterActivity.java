@@ -49,6 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String username = ((EditText) findViewById(R.id.usernameEditText)).getText().toString();
                 String password = ((EditText) findViewById(R.id.passwordEditText)).getText().toString();
                 String confirmPassword = ((EditText) findViewById(R.id.confirmPasswordEditText)).getText().toString();
+                //String cardNumber = ((EditText) findViewById(R.id.campuscardEditText)).getText().toString();
                 String verificationCode = ((EditText) findViewById(R.id.verificationCodeEditText)).getText().toString();
 
                 if (!password.equals(confirmPassword)) {
@@ -83,6 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             String username = params[0];
             String password = params[1];
+            //String cardNumber=params[2];
             String verificationCode = params[2];
 
             try {
@@ -90,6 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
                 JSONObject jsonParam = new JSONObject();
                 jsonParam.put("username", username);
                 jsonParam.put("password", password);
+                //jsonParam.put("cardNumber", cardNumber);
                 jsonParam.put("verificationCode", verificationCode);
 
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
