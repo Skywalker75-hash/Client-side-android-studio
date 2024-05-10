@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +78,7 @@ public class ShowLossActivity extends AppCompatActivity {
     }
 
     private void loadMoreItems() {
-        new ShowLossActivity.FetchItemsTask().execute();
+        new ShowLossActivity.FetchItemsTask().execute(username);
     }
 
     public class Item {
@@ -117,12 +116,14 @@ public class ShowLossActivity extends AppCompatActivity {
     }
 
 
-    private class FetchItemsTask extends AsyncTask<Void, Void, String> {
+    private class FetchItemsTask extends AsyncTask<String, Void, String> {
         @Override
-        protected String doInBackground(Void... voids) {
+        protected String doInBackground(String... params) {
+            String username = params[0];
             OkHttpClient client = new OkHttpClient();
             RequestBody formBody = new FormBody.Builder()
                     //.add("username",username)
+                    .add("username",username)
                     .add("page", String.valueOf(currentPage))
                     .add("pageSize", "5")
                     .build();
@@ -136,11 +137,9 @@ public class ShowLossActivity extends AppCompatActivity {
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-                    Log.d("ShowThingsActivity", "Response body: " + responseBody);
                     return responseBody;
                 }
             } catch (IOException e) {
-                Log.e("ShowThingsActivity", "Error fetching items", e);
             }
             return null;
         }
@@ -152,8 +151,6 @@ public class ShowLossActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonResponse = new JSONObject(result);
                     JSONArray data = jsonResponse.getJSONArray("data");
-                    Log.d("ShowThingsActivity", "Parsed JSON data: " + data.toString());
-
                     if (data.length() == 0) {
                         isLastPage = true;
                         Toast.makeText(ShowLossActivity.this, "所有数据已加载完成", Toast.LENGTH_SHORT).show();
@@ -176,7 +173,6 @@ public class ShowLossActivity extends AppCompatActivity {
                         currentPage++;
                     }
                 } catch (JSONException e) {
-                    Log.e("ShowThingsActivity", "JSON parsing error", e);
                     Toast.makeText(ShowLossActivity.this, "数据解析错误", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -205,8 +201,6 @@ public class ShowLossActivity extends AppCompatActivity {
         //将数据绑定到列表项的视图上（将数据绑定到子视图上）
         public void onBindViewHolder(@NonNull ShowLossActivity.MyAdapter.ViewHolder holder, int position) {
             ShowLossActivity.Item item = dataList.get(position);
-            Log.d("ShowThingsActivity", "Item Name: " + item.getName() + ", Price: $");
-            Log.d("ShowThingsActivity", "Binding view for item: " + item.getName());
             holder.textView.setText(item.getName());
 
             // 解码Base64图片字符串
@@ -217,14 +211,11 @@ public class ShowLossActivity extends AppCompatActivity {
                     byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                     holder.imageView.setImageBitmap(decodedBitmap);
-                    Log.d("ShowThingsActivity", "Image decoded successfully for item: " + item.getName());
                 } else {
-                    Log.d("ShowThingsActivity", "Image data for item: " + item.getName() + " does not start with expected prefix.");
                     holder.imageView.setImageDrawable(null); // 未能按预期解析数据，不显示图片
                 }
             } else {
                 holder.imageView.setImageDrawable(null); // 没有图片数据，不显示图片
-                Log.d("ShowThingsActivity", "No image data available for item: " + item.getName());
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {

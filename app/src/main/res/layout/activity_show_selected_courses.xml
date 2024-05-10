@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShowSelectedCoursesActivity">
+    tools:context=".ShowSelectedCoursesActivity"
+    android:background="@drawable/background3">
 
     <ImageButton
         android:id="@+id/backButton"
@@ -18,18 +19,18 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp" />
     <!-- 输入框 -->
-    <EditText
-        android:id="@+id/editTextInput"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/deletebutton"
+<!--    <EditText-->
+<!--        android:id="@+id/editTextInput"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="16dp"-->
+<!--        android:layout_marginTop="50dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/deletebutton"-->
 
-        android:hint="输入课程号"/>
+<!--        android:hint="输入课程号"/>-->
 
     <!-- 按钮 -->
     <Button
@@ -41,7 +42,7 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/editTextInput"
+
         />
 
     <TextView

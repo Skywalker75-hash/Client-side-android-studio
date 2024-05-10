@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background3"
     tools:context=".SelectCourseActivity">
 
     <ImageButton
@@ -13,21 +14,22 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="返回"
         android:src="@android:drawable/ic_media_previous"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp" />
 
     <EditText
         android:id="@+id/School"
         android:layout_width="0dp"
-        android:layout_height="51dp"
-        android:hint="学院"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/SelectCourseButton"
-        android:layout_marginTop="100dp"
-        app:layout_constraintHorizontal_chainStyle="packed" />
+        android:layout_height="43dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+    android:layout_marginEnd="8dp"
+    android:hint="学院"
+    app:layout_constraintEnd_toStartOf="@id/ChooseSchoolButton"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/backButton" />
 
     <Button
         android:id="@+id/ChooseSchoolButton"
@@ -35,53 +37,44 @@
         android:layout_height="wrap_content"
         android:text="查看"
         app:layout_constraintTop_toTopOf="@id/School"
-        app:layout_constraintStart_toEndOf="@id/School"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@id/School"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp" />
 
-    <EditText
-        android:id="@+id/selectCourseInput"
-        android:layout_width="0dp"
-        android:layout_height="51dp"
-        android:hint="输入课程号"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/SelectCourseButton"
-        android:layout_marginTop="170dp"
-        app:layout_constraintHorizontal_chainStyle="packed" />
 
     <Button
         android:id="@+id/SelectCourseButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="选课"
-        app:layout_constraintTop_toTopOf="@id/selectCourseInput"
-        app:layout_constraintStart_toEndOf="@id/selectCourseInput"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/School" />
 
     <TextView
         android:id="@+id/headerTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="240dp"
+        android:layout_marginTop="24dp"
         android:gravity="center"
         android:text="课程 课程代号 学分 开设学院 上课时间"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintHorizontal_bias="1.0"
         android:textSize="20sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/SelectCourseButton" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/coursesRecyclerView"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="405dp"
+        android:layout_height="508dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/headerTextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerTextView"
         app:layout_constraintVertical_bias="0.0" />
 
     <ProgressBar
@@ -89,12 +82,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/coursesRecyclerView"
-        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
-
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/coursesRecyclerView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

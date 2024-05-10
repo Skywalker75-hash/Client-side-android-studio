@@ -5,46 +5,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="@drawable/background2"
     tools:context=".MenuActivity">
 
     <Button
         android:id="@+id/buttonCampusCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="一卡通管理"
-       />
+        android:layout_marginBottom="8dp"
+        />
 
     <Button
         android:id="@+id/buttonAcademicManagement"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="教务管理"
+        android:layout_marginBottom="8dp"
         />
 
     <Button
         android:id="@+id/buttonClassSchedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="课程表"
-       />
+        android:layout_marginBottom="8dp"
+        />
 
     <Button
         android:id="@+id/buttonSecondHandMarket"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="二手商城"
-       />
+        android:layout_marginBottom="8dp"
+        />
 
     <Button
         android:id="@+id/buttonLostAndFound"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="物品挂失"
+        android:layout_marginBottom="8dp"
         />
     <Button
         android:id="@+id/buttonWeather"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="天气信息"
         />
 </LinearLayout>

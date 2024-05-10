@@ -2,7 +2,6 @@ package com.example.myapplication8;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -53,9 +52,6 @@ public class WeatherActivity extends AppCompatActivity {
             String weatherUrl = "http://t.weather.itboy.net/api/weather/city/" + WeatherCode.get(selectedCity);
             new FetchWeatherTask().execute(weatherUrl);
         });
-
-
-
     }
 
     private void initCities() {
@@ -81,12 +77,9 @@ public class WeatherActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... urls) {
             try {
-                Log.d(TAG, "Starting download from URL: " + urls[0]);
                 String result = downloadUrl(urls[0]);
-                Log.d(TAG, "Downloaded successfully.");
                 return result;
             } catch (IOException e) {
-                Log.e(TAG, "Failed to download URL: " + e.toString());
                 return "Unable to retrieve web page. URL may be invalid.";
             }
         }
@@ -98,8 +91,6 @@ public class WeatherActivity extends AppCompatActivity {
                 JSONObject dataObject = jsonObject.getJSONObject("data");
                 JSONObject todayForecast = dataObject.getJSONArray("forecast").getJSONObject(0);
 
-                Log.d(TAG, "JSON parsed successfully");
-
                 shiduTextView.setText("湿度: " + dataObject.getString("shidu"));
                 highTempTextView.setText("最高温度: " + todayForecast.getString("high"));
                 lowTempTextView.setText("最低温度: " + todayForecast.getString("low"));
@@ -107,7 +98,6 @@ public class WeatherActivity extends AppCompatActivity {
                 windDirectionTextView.setText("风向: " + todayForecast.getString("fx"));
                 windLevelTextView.setText("风力: " + todayForecast.getString("fl"));
             } catch (JSONException e) {
-                Log.e(TAG, "Error parsing JSON data: " + e.toString());
                 Toast.makeText(WeatherActivity.this, "Error parsing JSON data.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -123,7 +113,6 @@ public class WeatherActivity extends AppCompatActivity {
                 conn.setConnectTimeout(15000 /* milliseconds */);
                 conn.connect();
                 int response = conn.getResponseCode();
-                Log.d(TAG, "The response code is: " + response);
 
                 is = conn.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -139,7 +128,6 @@ public class WeatherActivity extends AppCompatActivity {
                 }
                 if (conn != null) {
                     conn.disconnect();
-                    Log.d(TAG, "Disconnected from server");
                 }
             }
         }

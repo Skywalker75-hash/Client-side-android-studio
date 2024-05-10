@@ -2,10 +2,12 @@ package com.example.myapplication8;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -22,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -35,8 +38,6 @@ public class SelectCourseActivity extends AppCompatActivity {
     private RecyclerView coursesRecyclerView;
     private CourseAdapter courseAdapter;
     private ProgressBar loadingProgressBar;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -72,15 +73,24 @@ public class SelectCourseActivity extends AppCompatActivity {
 
         Button SelectCourseButton=findViewById(R.id.SelectCourseButton);
         //选课按钮点击事件：
-        SelectCourseButton.setOnClickListener(new View.OnClickListener() {//new View是匿名类
+        SelectCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //从输入框中获取输入的课程号
-                String CourseCode = ((EditText) findViewById(R.id.selectCourseInput)).getText().toString();
-                //启动选课异步任务
-                new SelectCoursesTask().execute(username,CourseCode);
+                ArrayList<String> selectedCourseCodes = new ArrayList<>();
+                for (Course course : courseAdapter.getCourseList()) {
+                    if (course.isSelected()) {
+                        selectedCourseCodes.add(course.getCourseCode());
+                    }
+                }
+                if (!selectedCourseCodes.isEmpty()) {
+                    String courseCodesString = TextUtils.join(",", selectedCourseCodes);
+                    new SelectCoursesTask().execute(username, courseCodesString);
+                } else {
+                    Toast.makeText(getApplicationContext(), "请选择至少一门课程", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
         //返回按钮：
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -153,7 +163,50 @@ public class SelectCourseActivity extends AppCompatActivity {
             }
         }
     }
+    //选课：
+    private class SelectCoursesTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String username = params[0];
+            String selectedCourseCodes = params[1]; // 选中的课程代码，逗号分隔
 
+            try {
+                OkHttpClient client = new OkHttpClient();
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", username);
+                jsonParam.put("courseCodes", new JSONArray(Arrays.asList(selectedCourseCodes.split(","))));
+
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
+                Request request = new Request.Builder()
+                        .url("http://10.0.2.2:3000/selectCourses")
+                        .post(body)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+                return response.body().string();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (result != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(result);
+                    String message = jsonObj.optString("message", "Error");
+                    Toast.makeText(SelectCourseActivity.this, message, Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    Toast.makeText(SelectCourseActivity.this, "错误，未能成功解析", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(SelectCourseActivity.this, "收到空响应", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     //展示课程：
     private class ShowCoursesTask extends AsyncTask<Void, Void, List<Course>> {
@@ -208,7 +261,6 @@ public class SelectCourseActivity extends AppCompatActivity {
             super.onPostExecute(courses);
             loadingProgressBar.setVisibility(View.GONE);
             if (courses != null ) {
-
                 courseAdapter.updateCourses(courses);
             } else {
                 Toast.makeText(SelectCourseActivity.this, "显示课程失败", Toast.LENGTH_SHORT).show();
@@ -216,25 +268,24 @@ public class SelectCourseActivity extends AppCompatActivity {
         }
     }
 
-
-    // 确保你有 Course 和 CourseAdapter 类
     public class Course {
         private String courseName;
         private String courseCode;
         private int creditHours;
         private String department;
-        private String classTime; // 添加的新字段
+        private String classTime;
+        private boolean isSelected;  // 添加标记是否被选中
 
-        //更新构造函数以接受新的参数
         public Course(String courseName, String courseCode, int creditHours, String department, String classTime) {
             this.courseName = courseName;
             this.courseCode = courseCode;
             this.creditHours = creditHours;
             this.department = department;
-            this.classTime = classTime; // 正确初始化新字段
+            this.classTime = classTime;
+            this.isSelected = false;  // 默认未选中
         }
 
-        //获取数据元素的函数
+
         public String getCourseName() {
             return courseName;
         }
@@ -255,40 +306,32 @@ public class SelectCourseActivity extends AppCompatActivity {
             return classTime;
         }
 
+        public boolean isSelected() {
+            return isSelected;
+        }
 
+        public void setSelected(boolean selected) {
+            isSelected = selected;
+        }
     }
 
-
-    //适配器类
     public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
         private List<Course> courseList;
-        //构造函数
+
         public CourseAdapter(List<Course> courseList) {
             this.courseList = courseList;
         }
-        //更新数据
-        public void updateCourses(List<Course> courses) {
-
-            this.courseList.clear();
-            this.courseList.addAll(courses);
-            notifyDataSetChanged();
+        public List<Course> getCourseList() {
+            return courseList;
         }
-        //计算有多少项需要显示
-        @Override
-        public int getItemCount() {
-            return courseList.size();
-        }
-
         @NonNull
         @Override
-        //为每项数据创建视图
         public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.course_item, parent, false);
             return new CourseViewHolder(view);
         }
 
         @Override
-        //将数据绑定到视图上
         public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
             Course course = courseList.get(position);
             holder.courseNameTextView.setText(course.getCourseName());
@@ -296,8 +339,43 @@ public class SelectCourseActivity extends AppCompatActivity {
             holder.creditHoursTextView.setText(String.valueOf(course.getCreditHours()));
             holder.departmentTextView.setText(course.getDepartment());
             holder.classTimeTextView.setText(course.getClassTime());
+            holder.checkBoxSelectCourse.setChecked(course.isSelected());
+            holder.checkBoxSelectCourse.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                courseList.get(holder.getAdapterPosition()).setSelected(isChecked);
+            });
         }
 
+        @Override
+        public int getItemCount() {
+            return courseList.size();
+        }
+
+        //更新数据的方法
+        public void updateCourses(List<Course> courses) {
+            courseList.clear(); // 清除当前列表
+            courseList.addAll(courses); // 添加新数据
+            notifyDataSetChanged(); // 通知数据已改变
+        }
+
+        public class CourseViewHolder extends RecyclerView.ViewHolder {
+            TextView courseNameTextView;
+            TextView courseCodeTextView;
+            TextView creditHoursTextView;
+            TextView departmentTextView;
+            TextView classTimeTextView;
+            CheckBox checkBoxSelectCourse;
+
+            public CourseViewHolder(View itemView) {
+                super(itemView);
+                courseNameTextView = itemView.findViewById(R.id.courseNameTextView);
+                courseCodeTextView = itemView.findViewById(R.id.courseCodeTextView);
+                creditHoursTextView = itemView.findViewById(R.id.creditHoursTextView);
+                departmentTextView = itemView.findViewById(R.id.departmentTextView);
+                classTimeTextView = itemView.findViewById(R.id.classTimeTextView);
+                checkBoxSelectCourse = itemView.findViewById(R.id.checkBoxSelectCourse);
+            }
+        }
+    }
 
         public  class CourseViewHolder extends RecyclerView.ViewHolder {
             TextView courseNameTextView;
@@ -316,55 +394,4 @@ public class SelectCourseActivity extends AppCompatActivity {
             }
         }
     }
-    //选课：
-    private class SelectCoursesTask extends AsyncTask<String, Void, String> {
 
-        @Override
-        protected String doInBackground(String... params) {
-            String username = params[0];
-            String CourseCode = params[1];
-
-            try {
-                OkHttpClient client = new OkHttpClient();
-                JSONObject jsonParam = new JSONObject();
-                jsonParam.put("username", username);
-                jsonParam.put("courseCode", CourseCode);
-
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
-                Request request = new Request.Builder()
-                        .url("http://10.0.2.2:3000/selectCourses")
-                        .post(body)
-                        .build();
-
-                try (Response response = client.newCall(request).execute()) {
-                    return response.body().string();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (result != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(result);
-                    //boolean success = jsonObj.getBoolean("success");
-                    String message = jsonObj.getString("message");
-                    runOnUiThread(() -> {
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "错误，未能成功解析", Toast.LENGTH_SHORT).show());
-                }
-            } else {
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "收到空响应", Toast.LENGTH_SHORT).show());
-            }
-        }
-
-    }
-}

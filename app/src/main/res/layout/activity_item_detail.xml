@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".ItemDetailActivity">
 
+    <!-- 商品详情标题 -->
+    <TextView
+        android:id="@+id/text_view_item_detail_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="商品详情"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- 商品图片 -->
     <ImageView
         android:id="@+id/image_view"
@@ -15,55 +28,55 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_item_detail_title"
         tools:ignore="ContentDescription" />
 
     <!-- 商品名称 -->
     <TextView
         android:id="@+id/text_view_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="商品名称"
+        android:text="商品名称："
         android:textSize="18sp"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/image_view"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/image_view"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 发布者 -->
     <TextView
         android:id="@+id/text_view_publisher"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="发布者"
+        android:text="发布者："
         android:textSize="16sp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/text_view_name"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/text_view_name"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 类别 -->
     <TextView
         android:id="@+id/text_view_category"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="类别"
+        android:text="类别："
         android:textSize="16sp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/text_view_publisher"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/text_view_publisher"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 价格 -->
     <TextView
         android:id="@+id/text_view_price"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="价格"
+        android:text="价格："
         android:textSize="16sp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/text_view_category"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/text_view_category"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 购买按钮 -->

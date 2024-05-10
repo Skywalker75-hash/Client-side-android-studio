@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".classScheduleActivity">
+    tools:context=".classScheduleActivity"
+    android:background="@drawable/background3">
 
     <TextView
         android:id="@+id/headerTextView"

@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="选课"
+        android:background="@drawable/transparent_button"
         android:textSize="18sp"
         android:layout_marginBottom="16dp"/>
 
@@ -17,6 +18,7 @@
         android:id="@+id/button_course_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="选课情况"
         android:textSize="18sp"/>
 

@@ -158,13 +158,9 @@ public class CardManageActivity extends AppCompatActivity {
 
     //查询账户：
     private class QueryAccountTask extends AsyncTask<String, Void, String> {
-
-
         @Override
         protected String doInBackground(String... params) {
             String username = params[0];
-
-
             try {
                 OkHttpClient client = new OkHttpClient();
                 JSONObject jsonParam = new JSONObject();
@@ -215,12 +211,11 @@ public class CardManageActivity extends AppCompatActivity {
                         //showDialog("解析data失败", "未找到校园卡账户信息");
                     }
                 } else {
-
                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(),"响应解析失败", Toast.LENGTH_SHORT).show();
-               // showDialog("错误", "解析响应失败");
+
             }
         }
 
@@ -245,7 +240,6 @@ public class CardManageActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String username = params[0];
-            
 
             try {
                 OkHttpClient client = new OkHttpClient();

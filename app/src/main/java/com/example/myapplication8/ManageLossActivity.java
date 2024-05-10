@@ -165,11 +165,9 @@ public class ManageLossActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     return response.body().string();
                 } else {
-                    Log.e(TAG, "Error: " + response);
                     return null;
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error making delete request", e);
                 return null;
             }
         }
@@ -177,24 +175,19 @@ public class ManageLossActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if (result != null) {
-                Log.d(TAG, "Server response: " + result);
                 try {
                     JSONObject jsonResponse = new JSONObject(result);
                     boolean success = jsonResponse.optBoolean("success", false);
                     String message = jsonResponse.optString("message", "No message returned from server.");
                     Toast.makeText(ManageLossActivity.this, message, Toast.LENGTH_LONG).show();
                     if (success) {
-                        Log.d(TAG, "Delete successful, refreshing list.");
                         refreshItemsList(); // 刷新循环视图
                     } else {
-                        Log.d(TAG, "Delete failed, not refreshing list.");
                     }
                 } catch (JSONException e) {
-                    Log.e(TAG, "Error parsing JSON response", e);
                     Toast.makeText(ManageLossActivity.this, "Error parsing server response", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Log.e(TAG, "Error: No response from server");
                 Toast.makeText(ManageLossActivity.this, "No response from server", Toast.LENGTH_LONG).show();
             }
         }
@@ -221,7 +214,6 @@ public class ManageLossActivity extends AppCompatActivity {
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-                    Log.d("ShowThingsActivity", "Response body: " + responseBody);
                     return responseBody;
                 }
             } catch (IOException e) {
@@ -237,7 +229,6 @@ public class ManageLossActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonResponse = new JSONObject(result);
                     JSONArray data = jsonResponse.getJSONArray("data");
-                    Log.d("ShowThingsActivity", "Parsed JSON data: " + data.toString());
 
                     if (data.length() == 0) {
                         isLastPage = true;
@@ -261,7 +252,6 @@ public class ManageLossActivity extends AppCompatActivity {
                         currentPage++;
                     }
                 } catch (JSONException e) {
-                    Log.e("ShowThingsActivity", "JSON parsing error", e);
                     Toast.makeText(ManageLossActivity.this, "数据解析错误", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -303,14 +293,13 @@ public class ManageLossActivity extends AppCompatActivity {
                     byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                     holder.imageView.setImageBitmap(decodedBitmap);
-                    Log.d("ShowThingsActivity", "Image decoded successfully for item: " + item.getName());
                 } else {
-                    Log.d("ShowThingsActivity", "Image data for item: " + item.getName() + " does not start with expected prefix.");
+
                     holder.imageView.setImageDrawable(null); // 未能按预期解析数据，不显示图片
                 }
             } else {
                 holder.imageView.setImageDrawable(null); // 没有图片数据，不显示图片
-                Log.d("ShowThingsActivity", "No image data available for item: " + item.getName());
+
             }
         }
 

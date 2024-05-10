@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ManageThingsActivity">
+    tools:context=".ManageThingsActivity"
+    android:background="@drawable/background4">
     <ImageButton
         android:id="@+id/backButton"
         android:layout_width="wrap_content"

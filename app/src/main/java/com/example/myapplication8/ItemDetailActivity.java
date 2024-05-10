@@ -49,10 +49,11 @@ public class ItemDetailActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.image_view);
 
         //将数据动态绑定到页面资源上
-        textViewName.setText(itemName);
-        textViewPublisher.setText(userName);
-        textViewCategory.setText(category);
-        textViewPrice.setText(String.valueOf(itemPrice));
+        textViewName.setText("商品名称：" + itemName);
+        textViewPublisher.setText("发布者：" + userName);
+        textViewCategory.setText("类别：" + category);
+        textViewPrice.setText("价格：" + String.format("%.2f", itemPrice));
+
         //图片数据解析并显示
         if (itemImageData != null && !itemImageData.isEmpty()) {
             //去掉前缀

@@ -1,4 +1,4 @@
-<!-- dialog_academic_management.xml -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,12 +9,14 @@
         android:id="@+id/releaseButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="发布商品"
         android:textSize="18sp"
         android:layout_marginBottom="16dp"/>
     <Button
         android:id="@+id/manageThingsButton"
         android:layout_width="match_parent"
+        android:background="@drawable/transparent_button"
         android:layout_height="wrap_content"
         android:text="管理我的发布"
         android:textSize="18sp"
@@ -24,6 +26,7 @@
         android:id="@+id/buyButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/transparent_button"
         android:text="选购商品"
         android:textSize="18sp"/>
 

@@ -47,8 +47,8 @@ public class LossDetailActivity extends AppCompatActivity {
         EditText editTextPhone = findViewById(R.id.edit_view_phone);
 
         // 页面资源绑定数据
-        textViewName.setText(LossItemName);
-        textViewPublisher.setText(userName);
+        textViewName.setText("物品名称："+LossItemName);
+        textViewPublisher.setText("挂失者："+userName);
         // 图片数据解析并显示
         if (itemImageData != null && !itemImageData.isEmpty()) {
             if (itemImageData.startsWith("data:image/jpeg;base64,")) {

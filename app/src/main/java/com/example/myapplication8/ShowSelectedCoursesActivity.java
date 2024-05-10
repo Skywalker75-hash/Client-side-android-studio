@@ -2,12 +2,12 @@ package com.example.myapplication8;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -43,7 +44,7 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_selected_courses);
         //获取从MenuActivity传递过来的用户名
-         username = getIntent().getStringExtra("username");
+        username = getIntent().getStringExtra("username");
         //获取页面资源
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
         coursesRecyclerView = findViewById(R.id.coursesRecyclerView);
@@ -54,8 +55,18 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         deletebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String courseCode = ((EditText) findViewById(R.id.editTextInput)).getText().toString();//获取输入的课程号
-                new deleteCourseTask().execute(username, courseCode);
+                ArrayList<String> selectedCourseCodes = new ArrayList<>();
+                for (Course course : courseAdapter.getCourseList()) {
+                    if (course.isSelected()) {
+                        selectedCourseCodes.add(course.getCourseCode());
+                    }
+                }
+                if (!selectedCourseCodes.isEmpty()) {
+                    String courseCodesString = TextUtils.join(",", selectedCourseCodes);
+                    new deleteCourseTask().execute(username, courseCodesString);
+                } else {
+                    Toast.makeText(getApplicationContext(), "请选择至少一门课程", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -66,7 +77,7 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 结束当前Activity，返回上一个Activity
+                //结束当前Activity，返回上一个Activity
                 finish();
             }
         });
@@ -76,15 +87,13 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String username = params[0];
-            String courseCode = params[1];
-
-            Log.d("DeleteCourseTask", "Starting task with username: " + username + " and courseCode: " + courseCode);
+            String selectedCourseCodes = params[1]; // 选中的课程代码，逗号分隔
 
             try {
                 OkHttpClient client = new OkHttpClient();
                 JSONObject jsonParam = new JSONObject();
                 jsonParam.put("username", username);
-                jsonParam.put("courseCode", courseCode);
+                jsonParam.put("courseCodes", new JSONArray(Arrays.asList(selectedCourseCodes.split(","))));
 
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                 RequestBody body = RequestBody.create(jsonParam.toString(), JSON);
@@ -93,15 +102,10 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
                         .post(body)
                         .build();
 
-                Log.d("DeleteCourseTask", "Sending request to server");
-
-                try (Response response = client.newCall(request).execute()) {
-                    String responseBody = response.body().string();
-                    Log.d("DeleteCourseTask", "Received response: " + responseBody);
-                    return responseBody;
-                }
+                Response response = client.newCall(request).execute();
+                return response.body().string();
             } catch (Exception e) {
-                Log.e("DeleteCourseTask", "Error in network operation", e);
+                e.printStackTrace();
                 return null;
             }
         }
@@ -109,22 +113,20 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (result == null) {
-                Toast.makeText(getApplicationContext(), "网络请求失败，请检查网络连接", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            try {
-                JSONObject jsonObj = new JSONObject(result);
-                boolean success = jsonObj.getBoolean("success");
-                String message = jsonObj.getString("message");
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                if (success) {
-                    // 删除成功后重新加载课程列表
-                    new FetchCoursesTask(username).execute();
+            if (result != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(result);
+                    boolean success = jsonObj.getBoolean("success");
+                    Toast.makeText(ShowSelectedCoursesActivity.this, jsonObj.getString("message"), Toast.LENGTH_SHORT).show();
+                    if (success) {
+                        //删除成功后重新加载课程列表
+                        new FetchCoursesTask(username).execute();
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(ShowSelectedCoursesActivity.this, "错误，未能成功解析", Toast.LENGTH_SHORT).show();
                 }
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "响应解析失败", Toast.LENGTH_SHORT).show();
-                Log.e("DeleteCourseTask", "Failed to parse the response", e);
+            } else {
+                Toast.makeText(ShowSelectedCoursesActivity.this, "收到空响应", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -208,21 +210,45 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         private int creditHours;
         private String department;
         private String classTime;
+        private boolean isSelected;  // 添加标记是否被选中
 
-        // 构造函数、getters 和 setters
         public Course(String courseName, String courseCode, int creditHours, String department, String classTime) {
             this.courseName = courseName;
             this.courseCode = courseCode;
             this.creditHours = creditHours;
             this.department = department;
             this.classTime = classTime;
+            this.isSelected = false;  // 默认未选中
         }
 
-        public String getCourseName() { return courseName; }
-        public String getCourseCode() { return courseCode; }
-        public int getCreditHours() { return creditHours; }
-        public String getDepartment() { return department; }
-        public String getClassTime() { return classTime; }
+        // Getters and setters
+        public String getCourseName() {
+            return courseName;
+        }
+
+        public String getCourseCode() {
+            return courseCode;
+        }
+
+        public int getCreditHours() {
+            return creditHours;
+        }
+
+        public String getDepartment() {
+            return department;
+        }
+
+        public String getClassTime() {
+            return classTime;
+        }
+
+        public boolean isSelected() {
+            return isSelected;
+        }
+
+        public void setSelected(boolean selected) {
+            isSelected = selected;
+        }
     }
     public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
         private List<Course> courseList;
@@ -230,12 +256,19 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
         public CourseAdapter(List<Course> courseList) {
             this.courseList = courseList;
         }
-
+        public List<Course> getCourseList() {
+            return courseList;
+        }
         @NonNull
         @Override
         public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.course_item, parent, false);
             return new CourseViewHolder(view);
+        }
+        public void updateCourses(List<Course> courses) {
+            this.courseList.clear();  //清空现有数据
+            this.courseList.addAll(courses);  //添加新数据
+            notifyDataSetChanged();  //通知数据已更新
         }
 
         @Override
@@ -246,17 +279,24 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
             holder.creditHoursTextView.setText(String.valueOf(course.getCreditHours()));
             holder.departmentTextView.setText(course.getDepartment());
             holder.classTimeTextView.setText(course.getClassTime());
+            //移除旧的监听器
+            holder.checkBoxSelectCourse.setOnCheckedChangeListener(null);
+            //设置当前勾选状态
+            holder.checkBoxSelectCourse.setChecked(course.isSelected());
+            //设置新的监听器
+            holder.checkBoxSelectCourse.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                //更新课程的选中状态
+                courseList.get(holder.getAdapterPosition()).setSelected(isChecked);
+            });
         }
+
 
         @Override
         public int getItemCount() {
             return courseList.size();
         }
 
-        public void updateCourses(List<Course> courses) {
-            this.courseList = courses;
-            notifyDataSetChanged();
-        }
+ 
 
         public  class CourseViewHolder extends RecyclerView.ViewHolder {
             TextView courseNameTextView;
@@ -264,6 +304,7 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
             TextView creditHoursTextView;
             TextView departmentTextView;
             TextView classTimeTextView;
+            CheckBox checkBoxSelectCourse;
 
             public CourseViewHolder(View itemView) {
                 super(itemView);
@@ -272,9 +313,26 @@ public class ShowSelectedCoursesActivity extends AppCompatActivity {
                 creditHoursTextView = itemView.findViewById(R.id.creditHoursTextView);
                 departmentTextView = itemView.findViewById(R.id.departmentTextView);
                 classTimeTextView = itemView.findViewById(R.id.classTimeTextView);
+                checkBoxSelectCourse = itemView.findViewById(R.id.checkBoxSelectCourse);
             }
         }
     }
 
+    public  class CourseViewHolder extends RecyclerView.ViewHolder {
+        TextView courseNameTextView;
+        TextView courseCodeTextView;
+        TextView creditHoursTextView;
+        TextView departmentTextView;
+        TextView classTimeTextView;
+
+        public CourseViewHolder(View itemView) {
+            super(itemView);
+            courseNameTextView = itemView.findViewById(R.id.courseNameTextView);
+            courseCodeTextView = itemView.findViewById(R.id.courseCodeTextView);
+            creditHoursTextView = itemView.findViewById(R.id.creditHoursTextView);
+            departmentTextView = itemView.findViewById(R.id.departmentTextView);
+            classTimeTextView = itemView.findViewById(R.id.classTimeTextView);
+        }
+    }
 
 }

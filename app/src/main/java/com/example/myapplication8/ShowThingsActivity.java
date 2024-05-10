@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,11 +61,11 @@ public class ShowThingsActivity extends AppCompatActivity {
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 //检查是否正在加载数据或已经是最后一页
                 if (!isLoading && !isLastPage) {
-                    // 获取当前RecyclerView的总条目数
+                    //获取当前RecyclerView的总条目数
                     int totalItemCount = layoutManager.getItemCount();
-                    // 获取当前完全可见的最后一个条目的位置
+                    //获取当前完全可见的最后一个条目的位置
                     int lastVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition();
-                    // 如果总条目数小于或等于最后一个可见条目的位置加1，代表滚动到了列表底部
+                    //如果总条目数小于或等于最后一个可见条目的位置加1，代表滚动到了列表底部
                     if (totalItemCount <= (lastVisibleItemPosition + 1)) {
                         loadMoreItems();
                         isLoading = true;
@@ -137,16 +136,15 @@ public class ShowThingsActivity extends AppCompatActivity {
                     .url("http://10.0.2.2:3000/showThings")
                     .post(formBody)
                     .build();
-
             try {
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-                    Log.d("ShowThingsActivity", "Response body: " + responseBody);
+
                     return responseBody;
                 }
             } catch (IOException e) {
-                Log.e("ShowThingsActivity", "Error fetching items", e);
+
             }
             return null;
         }
@@ -158,7 +156,7 @@ public class ShowThingsActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonResponse = new JSONObject(result);
                     JSONArray data = jsonResponse.getJSONArray("data");
-                    Log.d("ShowThingsActivity", "Parsed JSON data: " + data.toString());
+
 
                     if (data.length() == 0) {
                         isLastPage = true;
@@ -184,7 +182,7 @@ public class ShowThingsActivity extends AppCompatActivity {
                         currentPage++;
                     }
                 } catch (JSONException e) {
-                    Log.e("ShowThingsActivity", "JSON parsing error", e);
+
                     Toast.makeText(ShowThingsActivity.this, "数据解析错误", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -213,8 +211,6 @@ public class ShowThingsActivity extends AppCompatActivity {
         //将数据绑定到列表项的视图上（将数据绑定到子视图上）
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             Item item = dataList.get(position);
-            Log.d("ShowThingsActivity", "Item Name: " + item.getName() + ", Price: $" + item.getPrice());
-            Log.d("ShowThingsActivity", "Binding view for item: " + item.getName());
             holder.textView.setText(item.getName());
             holder.priceTextView.setText("价格: ￥" + item.getPrice());
 
@@ -226,14 +222,12 @@ public class ShowThingsActivity extends AppCompatActivity {
                     byte[] decodedBytes = Base64.decode(base64Image, Base64.DEFAULT);
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                     holder.imageView.setImageBitmap(decodedBitmap);
-                    Log.d("ShowThingsActivity", "Image decoded successfully for item: " + item.getName());
                 } else {
-                    Log.d("ShowThingsActivity", "Image data for item: " + item.getName() + " does not start with expected prefix.");
-                    holder.imageView.setImageDrawable(null); // 未能按预期解析数据，不显示图片
+
+                    holder.imageView.setImageDrawable(null); //不能解析数据，不显示图片
                 }
             } else {
-                holder.imageView.setImageDrawable(null); // 没有图片数据，不显示图片
-                Log.d("ShowThingsActivity", "No image data available for item: " + item.getName());
+                holder.imageView.setImageDrawable(null); //没有图片数据，不显示图片
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -294,35 +288,29 @@ public class ShowThingsActivity extends AppCompatActivity {
                     .post(body)
                     .build();
 
-            Log.d(TAG, "Sending request to server..."); // 发送请求前的日志
-
             try {
                 Response response = client.newCall(request).execute();
                 String responseBody = response.body().string();
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Response success from server."); // 请求成功的日志
                     return responseBody;
                 } else {
-                    Log.e(TAG, "Server error: " + response); // 服务器返回错误的日志
                     return responseBody;
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Request failed: " + e.getMessage(), e); // 请求失败的日志
                 return "请求失败";
             }
         }
 
         @Override
         protected void onPostExecute(String result) {
-            // 尝试解析JSON，提取并显示消息
+            //尝试解析JSON，提取并显示消息
             try {
                 JSONObject jsonResponse = new JSONObject(result);
                 String message = jsonResponse.optString("message", "未知响应");
-
-                // 使用解析出的消息进行显示
+                //使用解析出的消息进行显示
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             } catch (JSONException e) {
-                // 如果解析失败，可能是返回了"请求失败"这样的非JSON字符串
+                //如果解析失败
                 Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
             }
         }

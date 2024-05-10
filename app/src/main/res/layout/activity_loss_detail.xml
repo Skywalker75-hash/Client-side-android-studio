@@ -6,20 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".LossDetailActivity">
 
-
+    <!-- 商品详情标题 -->
+    <TextView
+        android:id="@+id/text_view_item_detail_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="物品详情"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
     <!-- 商品图片 -->
+
+    <!-- 商品名称 -->
+
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="88dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.433"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
-    <!-- 商品名称 -->
     <TextView
         android:id="@+id/text_view_name"
         android:layout_width="wrap_content"
@@ -43,6 +57,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- 上传按钮 -->
     <EditText
         android:id="@+id/edit_view_phone"
         android:layout_width="200dp"
@@ -50,10 +65,11 @@
         android:hint="输入手机号"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.554"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <!-- 上传按钮 -->
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.535" />
+
     <Button
         android:id="@+id/releasebutton"
         android:layout_width="wrap_content"
